@@ -1155,40 +1155,27 @@
     return `\n\nThe user has provided these resource links for context (refer to their content if you can infer it from the URL type):\n${urls.map(u => '• ' + u).join('\n')}`;
   }
 async function callGemini(prompt) {
-    // 1. Put your real API key between the quotes below
     const API_KEY = "AQ.Ab8RN6KSNvsV1d5Q-oWaEv97szb-IVi3qb_fftT_PQil7yCp9Q"; 
-
-    // Bypasses the browser block by calling the direct beta gateway route
-    const url = "https://googleapis.com" + API_KEY;
+    
+    // Split into readable parts so it doesn't overflow your monitor layout
+    const base = "https://generativelanguage.googleapis.com";
+    const path = "/v1beta/models/gemini-2.5-flash:generateContent?key=";
+    const url = base + path + API_KEY;
 
     try {
         const response = await fetch(url, {
             method: "POST",
-            headers: { 
-                "Content-Type": "application/json"
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-                contents: [{ 
-                    parts: [{ text: prompt }] 
-                }]
+                contents: [{ parts: [{ text: prompt }] }]
             })
         });
 
-        if (!response.ok) {
-            return "Server Check Error: Code " + response.status + ". Please ensure your billing or key is fully active.";
-        }
-
         const data = await response.json();
-        
-        // Extra structural verification layer to parse text correctly
-        if (data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0]) {
-            return data.candidates[0].content.parts[0].text;
-        } else {
-            return "Error parsing response data structure: " + JSON.stringify(data);
-        }
+        return data.candidates[0].content.parts[0].text;
 
     } catch (error) {
-        return "Network connection issue: " + error.message;
+        return "System error: " + error.message;
     }
 }
    // ─── MARKDOWN RENDERER ───────────────────────────────────
