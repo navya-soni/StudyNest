@@ -1155,14 +1155,14 @@
     return `\n\nThe user has provided these resource links for context (refer to their content if you can infer it from the URL type):\n${urls.map(u => '• ' + u).join('\n')}`;
   }
 async function callGemini(prompt) {
-    // 1. Put your real API key between the quotes below
-    var myKey = "AQ.Ab8RN6LL7-Fhsw8ZmvpBWMBLBMKn39vG9j4KIpH3aG7SqeD0WQ"; 
+    // 1. Double check that your real alphanumeric key is inside these quotes
+    const API_KEY = "AQ.Ab8RN6LL7-Fhsw8ZmvpBWMBLBMKn39vG9j4KIpH3aG7SqeD0WQ"; 
     
-    // Classic link joining (No backticks required!)
-    var url = "https://googleapis.com" + myKey;
+    // 2. CLEAN DIRECT URL: No proxies, no weird plus signs, just pure backticks (`)
+    const url = `https://googleapis.com{API_KEY}`;
 
     try {
-        var response = await fetch(url, {
+        const response = await fetch(url, {
             method: "POST",
             headers: { 
                 "Content-Type": "application/json" 
@@ -1175,20 +1175,21 @@ async function callGemini(prompt) {
         });
 
         if (!response.ok) {
-            return "Error: Server returned status code " + response.status;
+            throw new Error(`HTTP error! Status: ${response.status}`);
         }
 
-        var data = await response.json();
+        const data = await response.json();
         
-        // Safe list searching using standard numbers [0]
+        // 3. Exact structure targeting to pull your notes text out safely
         if (data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0]) {
             return data.candidates[0].content.parts[0].text;
         } else {
-            return "Error: Received empty data from Google.";
+            return "Error: Could not read notes text from response data structure.";
         }
 
     } catch (error) {
-        return "Error connecting to service: " + error.message;
+        console.error("Detailed Error:", error);
+        return `Network Error: ${error.message}. Please check your API key status.`;
     }
 }
    // ─── MARKDOWN RENDERER ───────────────────────────────────
