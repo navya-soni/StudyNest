@@ -1155,11 +1155,11 @@
     return `\n\nThe user has provided these resource links for context (refer to their content if you can infer it from the URL type):\n${urls.map(u => '• ' + u).join('\n')}`;
   }
 async function callGemini(prompt) {
-    // 1. Double check that your real alphanumeric key is inside these quotes
+    // 1. Clear out your old key and paste your actual key inside the quotes below
     const API_KEY = "AQ.Ab8RN6LL7-Fhsw8ZmvpBWMBLBMKn39vG9j4KIpH3aG7SqeD0WQ"; 
-    
-    // 2. CLEAN DIRECT URL: No proxies, no weird plus signs, just pure backticks (`)
-    const url = `https://googleapis.com{API_KEY}`;
+
+    // Verified direct URL string concatenation
+    const url = "https://googleapis.com" + API_KEY;
 
     try {
         const response = await fetch(url, {
@@ -1174,22 +1174,22 @@ async function callGemini(prompt) {
             })
         });
 
+        // If the server rejects the key or has an error, show the real code
         if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
+            return "Server Error: Code " + response.status + ". Please check if your API key is active.";
         }
 
         const data = await response.json();
         
-        // 3. Exact structure targeting to pull your notes text out safely
+        // This structural array index extraction ensures the text prints properly
         if (data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0]) {
             return data.candidates[0].content.parts[0].text;
         } else {
-            return "Error: Could not read notes text from response data structure.";
+            return "Error: Could not parse response text. Data: " + JSON.stringify(data);
         }
 
     } catch (error) {
-        console.error("Detailed Error:", error);
-        return `Network Error: ${error.message}. Please check your API key status.`;
+        return "Network Error: " + error.message + ". Please verify your internet connection and API key.";
     }
 }
    // ─── MARKDOWN RENDERER ───────────────────────────────────
