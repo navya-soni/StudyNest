@@ -1,0 +1,1573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>StudyNest</title>   
+</head>
+<body>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --ink:       #1A1208;
+    --ink-soft:  #3D2E1A;
+    --paper:     #F7F2E8;
+    --paper-2:   #EFE8D8;
+    --paper-3:   #E5DBc8;
+    --gold:      #B8832A;
+    --gold-light:#D4A44E;
+    --gold-glow: rgba(184,131,42,0.18);
+    --sage:      #5C7A5A;
+    --sage-light:#EBF0E8;
+    --rose:      #A0555A;
+    --rose-light:#F5EAEA;
+    --muted:     #8A7358;
+    --border:    rgba(184,131,42,0.22);
+    --border-strong: rgba(184,131,42,0.45);
+    --shadow-sm: 0 1px 4px rgba(26,18,8,0.08);
+    --shadow:    0 4px 24px rgba(26,18,8,0.10);
+    --shadow-lg: 0 8px 40px rgba(26,18,8,0.13);
+    --radius:    14px;
+    --radius-sm: 8px;
+    --topbar-h:  60px;
+    --sidebar-w: 68px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── TOPBAR ─────────────────────────────────────────────── */
+  .topbar {
+    height: var(--topbar-h);
+    background: var(--ink);
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    position: sticky;
+    top: 0;
+    z-index: 200;
+    border-bottom: 1px solid rgba(184,131,42,0.3);
+  }
+
+  .logo-mark {
+    width: 32px; height: 32px;
+    background: var(--gold);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(184,131,42,0.4);
+  }
+
+  .logo-text {
+    margin-left: 10px;
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.25rem;
+    color: #F7F2E8;
+    letter-spacing: 0.2px;
+  }
+  .logo-text em {
+    color: var(--gold-light);
+    font-style: normal;
+  }
+
+  .topbar-tagline {
+    margin-left: 12px;
+    font-size: 0.72rem;
+    color: rgba(247,242,232,0.38);
+    font-style: italic;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    letter-spacing: 0.2px;
+    padding-left: 12px;
+    border-left: 1px solid rgba(247,242,232,0.12);
+  }
+
+  /* ── LAYOUT ─────────────────────────────────────────────── */
+  .app-body {
+    display: flex;
+    flex: 1;
+  }
+
+  /* ── SIDEBAR ────────────────────────────────────────────── */
+  .sidebar {
+    width: var(--sidebar-w);
+    background: var(--ink);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px 0 24px;
+    gap: 4px;
+    position: sticky;
+    top: var(--topbar-h);
+    height: calc(100vh - var(--topbar-h));
+    overflow-y: auto;
+    border-right: 1px solid rgba(184,131,42,0.15);
+    flex-shrink: 0;
+  }
+
+  .sidebar-tab {
+    width: 44px; height: 46px;
+    border-radius: 10px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    font-size: 1.15rem;
+    gap: 3px;
+    border: none;
+    background: transparent;
+    color: rgba(247,242,232,0.35);
+    position: relative;
+  }
+  .sidebar-tab:hover {
+    background: rgba(184,131,42,0.14);
+    color: var(--gold-light);
+  }
+  .sidebar-tab.active {
+    background: var(--gold);
+    color: #1A1208;
+    box-shadow: 0 3px 10px rgba(184,131,42,0.45);
+  }
+  .sidebar-tab .s-label {
+    font-size: 0.48rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    line-height: 1;
+    font-family: 'DM Mono', monospace;
+  }
+  .sidebar-rule {
+    width: 28px; height: 1px;
+    background: rgba(255,255,255,0.07);
+    margin: 8px 0;
+  }
+
+  /* ── CONTENT ────────────────────────────────────────────── */
+  .content-area {
+    flex: 1;
+    padding: 32px 36px 48px;
+    max-width: 860px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  .panel { display: none; }
+  .panel.active { display: block; animation: panelIn 0.3s ease; }
+  @keyframes panelIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── PAGE HEADER ────────────────────────────────────────── */
+  .page-header {
+    margin-bottom: 28px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .page-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    font-weight: 500;
+    color: var(--gold);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 6px;
+  }
+  .page-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2rem;
+    color: var(--ink);
+    line-height: 1.15;
+    margin-bottom: 6px;
+  }
+  .page-sub {
+    font-size: 0.85rem;
+    color: var(--muted);
+    line-height: 1.6;
+    font-weight: 400;
+    max-width: 480px;
+  }
+
+  /* ── CARD ───────────────────────────────────────────────── */
+  .card {
+    background: #FDFAF4;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px 26px;
+    margin-bottom: 18px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .card-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    font-weight: 500;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  /* ── TEXTAREA ───────────────────────────────────────────── */
+  .text-area {
+    width: 100%;
+    min-height: 100px;
+    padding: 13px 15px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--paper);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.875rem;
+    color: var(--ink);
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.18s, box-shadow 0.18s;
+    line-height: 1.6;
+  }
+  .text-area:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px var(--gold-glow);
+  }
+  .text-area::placeholder { color: var(--muted); opacity: 0.6; }
+
+  /* ── URL ROW ────────────────────────────────────────────── */
+  .url-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .url-input {
+    flex: 1;
+    padding: 10px 13px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--paper);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.83rem;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.18s, box-shadow 0.18s;
+  }
+  .url-input:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px var(--gold-glow);
+  }
+  .url-input::placeholder { color: var(--muted); opacity: 0.55; }
+
+  .btn-add {
+    padding: 10px 16px;
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+    white-space: nowrap;
+  }
+  .btn-add:hover { background: var(--ink-soft); }
+
+  /* ── RESOURCE LIST ──────────────────────────────────────── */
+  .resource-list { display: flex; flex-direction: column; gap: 5px; }
+  .resource-item {
+    background: var(--paper-2);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 7px 12px;
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .resource-item .r-icon { font-size: 0.9rem; flex-shrink: 0; }
+  .resource-item .r-text { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; opacity: 0.85; }
+  .resource-item .r-del {
+    cursor: pointer;
+    color: var(--rose);
+    font-size: 0.8rem;
+    background: none;
+    border: none;
+    padding: 0;
+    opacity: 0.7;
+    line-height: 1;
+  }
+  .resource-item .r-del:hover { opacity: 1; }
+
+  /* ── SECTION DIVIDER ────────────────────────────────────── */
+  .field-group { margin-top: 20px; }
+
+  /* ── NOTE STYLE PILLS ───────────────────────────────────── */
+  .style-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+  }
+  .style-pill {
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1.5px solid var(--border);
+    background: var(--paper);
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .style-pill:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+  .style-pill.active {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: white;
+    font-weight: 600;
+  }
+
+  /* ── QUIZ MODE CARDS ────────────────────────────────────── */
+  .mode-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+    gap: 10px;
+  }
+  .mode-card {
+    background: var(--paper);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px;
+    cursor: pointer;
+    transition: all 0.16s;
+    text-align: center;
+  }
+  .mode-card:hover { border-color: var(--gold-light); box-shadow: var(--shadow-sm); }
+  .mode-card.selected {
+    border-color: var(--gold);
+    background: var(--gold-glow);
+    box-shadow: 0 0 0 2px rgba(184,131,42,0.2);
+  }
+  .mode-card .mc-icon { font-size: 1.5rem; margin-bottom: 5px; }
+  .mode-card .mc-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.2;
+  }
+  .mode-card .mc-sub {
+    font-size: 0.68rem;
+    color: var(--muted);
+    margin-top: 2px;
+    font-style: italic;
+  }
+
+  /* ── CHECKBOXES ─────────────────────────────────────────── */
+  .check-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 18px;
+    margin-top: 8px;
+  }
+  .check-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.81rem;
+    color: var(--ink-soft);
+    cursor: pointer;
+    font-weight: 500;
+  }
+  .check-item input[type="checkbox"] {
+    accent-color: var(--gold);
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
+  }
+
+  /* ── GENERATE BUTTON ────────────────────────────────────── */
+  .btn-generate {
+    margin-top: 20px;
+    padding: 13px 28px;
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.18s;
+    letter-spacing: 0.1px;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-generate::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent 40%, rgba(184,131,42,0.15));
+    pointer-events: none;
+  }
+  .btn-generate:hover {
+    background: var(--ink-soft);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(26,18,8,0.18);
+  }
+  .btn-generate:active { transform: translateY(0); }
+  .btn-generate:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+  /* ── TIP BOX ────────────────────────────────────────────── */
+  .tip-box {
+    background: var(--sage-light);
+    border: 1px solid rgba(92,122,90,0.25);
+    border-left: 3px solid var(--sage);
+    border-radius: var(--radius-sm);
+    padding: 11px 14px;
+    font-size: 0.8rem;
+    color: #3D5C3B;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    line-height: 1.55;
+  }
+  .tip-box .tip-icon { flex-shrink: 0; font-size: 0.95rem; margin-top: 1px; }
+
+  /* ── OUTPUT CARD ────────────────────────────────────────── */
+  .output-card {
+    background: #FDFAF4;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 26px 28px;
+    box-shadow: var(--shadow);
+    margin-top: 22px;
+    animation: panelIn 0.35s ease;
+  }
+
+  .output-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .output-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.1rem;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .btn-action {
+    padding: 5px 13px;
+    background: var(--paper-2);
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    font-size: 0.73rem;
+    font-weight: 600;
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: all 0.14s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .btn-action:hover {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: white;
+  }
+
+  /* ── MARKDOWN OUTPUT ────────────────────────────────────── */
+  .md-output {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    line-height: 1.78;
+    color: var(--ink);
+  }
+  .md-output h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.3rem;
+    color: var(--ink);
+    margin: 20px 0 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+  .md-output h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.05rem;
+    color: var(--ink-soft);
+    margin: 16px 0 6px;
+  }
+  .md-output h3 {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--gold);
+    margin: 12px 0 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-family: 'DM Mono', monospace;
+  }
+  .md-output p { margin-bottom: 10px; }
+  .md-output ul, .md-output ol {
+    padding-left: 20px;
+    margin-bottom: 10px;
+  }
+  .md-output li { margin-bottom: 4px; line-height: 1.7; }
+  .md-output strong { color: var(--ink-soft); font-weight: 700; }
+  .md-output em { color: var(--sage); font-style: italic; }
+  .md-output blockquote {
+    border-left: 3px solid var(--gold);
+    padding: 2px 0 2px 14px;
+    color: var(--muted);
+    font-style: italic;
+    margin: 10px 0;
+  }
+  .md-output table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 12px 0;
+    font-size: 0.82rem;
+  }
+  .md-output th {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 8px 12px;
+    font-weight: 600;
+    text-align: left;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+  }
+  .md-output td {
+    border: 1px solid var(--border);
+    padding: 7px 12px;
+    background: var(--paper);
+  }
+  .md-output tr:nth-child(even) td { background: var(--paper-2); }
+
+  /* ── LOADING ────────────────────────────────────────────── */
+  .loading-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 44px 20px;
+    gap: 14px;
+  }
+  .spinner {
+    width: 32px; height: 32px;
+    border: 2.5px solid var(--border);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 0.75s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text {
+    font-size: 0.8rem;
+    color: var(--muted);
+    font-style: italic;
+    letter-spacing: 0.2px;
+  }
+
+  /* ── ERROR ──────────────────────────────────────────────── */
+  .error-msg {
+    background: var(--rose-light);
+    border: 1px solid rgba(160,85,90,0.3);
+    border-left: 3px solid var(--rose);
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    font-size: 0.82rem;
+    color: #7A3338;
+    margin-top: 16px;
+  }
+
+  /* ── QUIZ ───────────────────────────────────────────────── */
+  .quiz-question {
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 18px 20px;
+    margin-bottom: 12px;
+    animation: panelIn 0.25s ease;
+  }
+  .quiz-q-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    font-weight: 500;
+    color: var(--gold);
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    margin-bottom: 7px;
+  }
+  .quiz-q-text {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 13px;
+    line-height: 1.5;
+  }
+  .quiz-options { display: flex; flex-direction: column; gap: 6px; }
+  .quiz-option {
+    background: #FDFAF4;
+    border: 1.5px solid var(--border);
+    border-radius: 7px;
+    padding: 9px 14px;
+    font-size: 0.83rem;
+    cursor: pointer;
+    transition: all 0.13s;
+    text-align: left;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--ink);
+  }
+  .quiz-option:hover { border-color: var(--gold-light); background: var(--gold-glow); }
+  .quiz-option.correct { background: var(--sage-light); border-color: var(--sage); color: #3D5C3B; }
+  .quiz-option.wrong   { background: var(--rose-light); border-color: var(--rose);  color: #7A3338; }
+  .quiz-explain {
+    margin-top: 10px;
+    padding: 10px 14px;
+    background: rgba(184,131,42,0.07);
+    border-left: 3px solid var(--gold);
+    border-radius: 0 7px 7px 0;
+    font-size: 0.79rem;
+    font-style: italic;
+    color: var(--ink-soft);
+    line-height: 1.55;
+  }
+
+  /* ── INFOGRAPHIC ────────────────────────────────────────── */
+  .infograph-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 13px;
+    margin-top: 6px;
+  }
+  .info-block {
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 18px 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .info-block::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 3px;
+    border-radius: 2px 2px 0 0;
+  }
+  .info-block:nth-child(4n+1)::before { background: var(--gold); }
+  .info-block:nth-child(4n+2)::before { background: var(--sage); }
+  .info-block:nth-child(4n+3)::before { background: var(--rose); }
+  .info-block:nth-child(4n+4)::before { background: var(--ink-soft); }
+  .info-block .ib-icon { font-size: 1.6rem; margin-bottom: 9px; display: block; }
+  .info-block .ib-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 0.88rem;
+    color: var(--ink);
+    margin-bottom: 6px;
+    line-height: 1.3;
+  }
+  .info-block .ib-content {
+    font-size: 0.77rem;
+    line-height: 1.62;
+    color: var(--ink-soft);
+    opacity: 0.85;
+  }
+
+  /* ── PAPER ──────────────────────────────────────────────── */
+  .paper-sheet {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 36px 40px;
+    box-shadow: var(--shadow-lg);
+    font-family: 'DM Sans', sans-serif;
+    line-height: 1.8;
+    position: relative;
+  }
+  .paper-sheet::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 4px; height: 100%;
+    background: linear-gradient(to bottom, var(--gold), var(--gold-light));
+    border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+  }
+  .paper-header {
+    text-align: center;
+    margin-bottom: 24px;
+    padding-bottom: 18px;
+    border-bottom: 2px solid var(--ink);
+  }
+  .paper-school {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .paper-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.4rem;
+    color: var(--ink);
+    margin: 4px 0;
+    line-height: 1.2;
+  }
+  .paper-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 12px;
+    font-size: 0.77rem;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+  }
+  .paper-section-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--gold);
+    margin: 22px 0 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .paper-section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border-strong);
+  }
+  .paper-q {
+    margin-bottom: 13px;
+    font-size: 0.875rem;
+    color: var(--ink);
+    padding-left: 2px;
+    line-height: 1.7;
+  }
+  .paper-q .q-num { font-weight: 700; color: var(--ink-soft); margin-right: 6px; }
+  .paper-q .marks { float: right; font-size: 0.72rem; color: var(--muted); font-family: 'DM Mono', monospace; }
+
+  /* ── LIBRARY TIPS ───────────────────────────────────────── */
+  .study-tip {
+    background: var(--paper-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 13px 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 0.82rem;
+    color: var(--ink-soft);
+    line-height: 1.55;
+  }
+  .study-tip .tip-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+  .study-tip strong { color: var(--ink); font-weight: 600; }
+
+  /* ── SCROLLBAR ──────────────────────────────────────────── */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 4px; }
+
+  @media (max-width: 640px) {
+    .content-area { padding: 20px 16px 40px; }
+    .paper-sheet { padding: 22px 18px; }
+    .page-title { font-size: 1.55rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="logo-mark">🪺</div>
+  <div class="logo-text">Study<em>Nest</em></div>
+  <div class="topbar-tagline">your AI study companion</div>
+</header>
+
+<!-- APP BODY -->
+<div class="app-body">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <button class="sidebar-tab active" onclick="showPanel('notes')" title="Smart Notes">
+      <span>📝</span>
+      <span class="s-label">Notes</span>
+    </button>
+    <button class="sidebar-tab" onclick="showPanel('quiz')" title="Quiz Me">
+      <span>🎯</span>
+      <span class="s-label">Quiz</span>
+    </button>
+    <button class="sidebar-tab" onclick="showPanel('infographic')" title="Visual Summary">
+      <span>🗺️</span>
+      <span class="s-label">Visual</span>
+    </button>
+    <button class="sidebar-tab" onclick="showPanel('paper')" title="Sample Paper">
+      <span>📄</span>
+      <span class="s-label">Paper</span>
+    </button>
+    <div class="sidebar-rule"></div>
+    <button class="sidebar-tab" onclick="showPanel('resources')" title="My Library">
+      <span>📚</span>
+      <span class="s-label">Library</span>
+    </button>
+  </nav>
+
+  <!-- CONTENT -->
+  <main class="content-area">
+
+    <!-- ── NOTES ── -->
+    <div id="panel-notes" class="panel active">
+      <div class="page-header">
+        <div class="page-eyebrow">Tool 01 — Notes</div>
+        <div class="page-title">Smart Notes</div>
+        <div class="page-sub">Paste content, add a link, or just name a topic — get clean, structured notes instantly.</div>
+      </div>
+
+      <div class="tip-box">
+        <span class="tip-icon">💡</span>
+        <span>You can paste raw textbook text, drop a YouTube URL, or just type a topic name. StudyNest handles the rest.</span>
+      </div>
+
+      <div class="card">
+        <span class="card-label">Your content or topic</span>
+        <textarea class="text-area" id="notes-input" placeholder="e.g. 'Photosynthesis' or paste a full chapter here…" rows="5"></textarea>
+
+        <div class="field-group">
+          <span class="card-label">Resource links</span>
+          <div class="url-row">
+            <input class="url-input" id="notes-url" placeholder="https://youtube.com/... or any article link" />
+            <button class="btn-add" onclick="addResource('notes')">+ Add</button>
+          </div>
+          <div class="resource-list" id="notes-resource-list"></div>
+        </div>
+
+        <div class="field-group">
+          <span class="card-label">Note style</span>
+          <div class="style-pills">
+            <button class="style-pill active" onclick="selectNoteStyle(this,'bullet')">🔵 Bullet Points</button>
+            <button class="style-pill" onclick="selectNoteStyle(this,'detailed')">📖 Detailed</button>
+            <button class="style-pill" onclick="selectNoteStyle(this,'cornell')">📓 Cornell Style</button>
+            <button class="style-pill" onclick="selectNoteStyle(this,'story')">🌿 Story Form</button>
+            <button class="style-pill" onclick="selectNoteStyle(this,'short')">⚡ Key Points Only</button>
+          </div>
+        </div>
+
+        <button class="btn-generate" onclick="generateNotes()" id="notes-btn">
+          ✨ Generate Notes
+        </button>
+      </div>
+
+      <div id="notes-output"></div>
+    </div>
+
+    <!-- ── QUIZ ── -->
+    <div id="panel-quiz" class="panel">
+      <div class="page-header">
+        <div class="page-eyebrow">Tool 02 — Quiz</div>
+        <div class="page-title">Quiz Me</div>
+        <div class="page-sub">Test yourself with interactive questions generated from your topic or notes.</div>
+      </div>
+
+      <div class="card">
+        <span class="card-label">Topic or content</span>
+        <textarea class="text-area" id="quiz-input" placeholder="Enter a topic or paste the content you want to be quizzed on…" rows="4"></textarea>
+
+        <div class="field-group">
+          <span class="card-label">Resource links</span>
+          <div class="url-row">
+            <input class="url-input" id="quiz-url" placeholder="Add a YouTube / website link…" />
+            <button class="btn-add" onclick="addResource('quiz')">+ Add</button>
+          </div>
+          <div class="resource-list" id="quiz-resource-list"></div>
+        </div>
+
+        <div class="field-group">
+          <span class="card-label">Question type</span>
+          <div class="mode-grid">
+            <div class="mode-card selected" onclick="selectMode(this,'mcq')">
+              <div class="mc-icon">🔘</div>
+              <div class="mc-label">Multiple Choice</div>
+              <div class="mc-sub">4 options, pick one</div>
+            </div>
+            <div class="mode-card" onclick="selectMode(this,'truefalse')">
+              <div class="mc-icon">✅</div>
+              <div class="mc-label">True / False</div>
+              <div class="mc-sub">Quick fact check</div>
+            </div>
+            <div class="mode-card" onclick="selectMode(this,'short')">
+              <div class="mc-icon">✏️</div>
+              <div class="mc-label">Short Answer</div>
+              <div class="mc-sub">Write your answer</div>
+            </div>
+            <div class="mode-card" onclick="selectMode(this,'mixed')">
+              <div class="mc-icon">🎯</div>
+              <div class="mc-label">Mixed Bag</div>
+              <div class="mc-sub">All types together</div>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-generate" onclick="generateQuiz()" id="quiz-btn">
+          🎯 Generate Quiz
+        </button>
+      </div>
+
+      <div id="quiz-output"></div>
+    </div>
+
+    <!-- ── INFOGRAPHIC ── -->
+    <div id="panel-infographic" class="panel">
+      <div class="page-header">
+        <div class="page-eyebrow">Tool 03 — Visual</div>
+        <div class="page-title">Visual Summary</div>
+        <div class="page-sub">Turn any topic into a clear, card-based concept map.</div>
+      </div>
+
+      <div class="card">
+        <span class="card-label">Topic or content</span>
+        <textarea class="text-area" id="info-input" placeholder="e.g. 'The Water Cycle', 'French Revolution causes', 'DNA structure'…" rows="4"></textarea>
+
+        <div class="field-group">
+          <span class="card-label">Resource links</span>
+          <div class="url-row">
+            <input class="url-input" id="info-url" placeholder="Add a YouTube / website link…" />
+            <button class="btn-add" onclick="addResource('info')">+ Add</button>
+          </div>
+          <div class="resource-list" id="info-resource-list"></div>
+        </div>
+
+        <button class="btn-generate" onclick="generateInfographic()" id="info-btn">
+          🗺️ Generate Visual Summary
+        </button>
+      </div>
+
+      <div id="info-output"></div>
+    </div>
+
+    <!-- ── PAPER ── -->
+    <div id="panel-paper" class="panel">
+      <div class="page-header">
+        <div class="page-eyebrow">Tool 04 — Paper</div>
+        <div class="page-title">Sample Question Paper</div>
+        <div class="page-sub">Generate a full exam paper with MCQ, definition, short answer, analysis and case study sections.</div>
+      </div>
+
+      <div class="card">
+        <span class="card-label">Subject & topic</span>
+        <textarea class="text-area" id="paper-input" placeholder="e.g. 'Science — Life Processes' or 'History: Nationalism in India'…" rows="3"></textarea>
+
+        <div class="field-group">
+          <span class="card-label">Resource links</span>
+          <div class="url-row">
+            <input class="url-input" id="paper-url" placeholder="Add resource links…" />
+            <button class="btn-add" onclick="addResource('paper')">+ Add</button>
+          </div>
+          <div class="resource-list" id="paper-resource-list"></div>
+        </div>
+
+        <div class="field-group">
+          <span class="card-label">Include sections</span>
+          <div class="check-group">
+            <label class="check-item"><input type="checkbox" id="inc-mcq" checked> MCQ (1 mark)</label>
+            <label class="check-item"><input type="checkbox" id="inc-def" checked> Define / Fill (2 marks)</label>
+            <label class="check-item"><input type="checkbox" id="inc-rem" checked> Remembering Based (3 marks)</label>
+            <label class="check-item"><input type="checkbox" id="inc-ana" checked> Analysing Based (4 marks)</label>
+            <label class="check-item"><input type="checkbox" id="inc-cbq" checked> CBQ / Case Study (5 marks)</label>
+          </div>
+        </div>
+
+        <button class="btn-generate" onclick="generatePaper()" id="paper-btn">
+          📄 Generate Question Paper
+        </button>
+      </div>
+
+      <div id="paper-output"></div>
+    </div>
+
+    <!-- ── LIBRARY ── -->
+    <div id="panel-resources" class="panel">
+      <div class="page-header">
+        <div class="page-eyebrow">Library</div>
+        <div class="page-title">My Resources</div>
+        <div class="page-sub">All links you've added across your study sessions.</div>
+      </div>
+
+      <div class="card">
+        <span class="card-label">Saved links</span>
+        <div id="library-list" style="margin-top:6px;display:flex;flex-direction:column;gap:5px;"></div>
+        <p id="library-empty" style="font-size:0.81rem;color:var(--muted);font-style:italic;margin-top:6px;">No resources yet — add links while generating notes, quizzes or papers.</p>
+      </div>
+
+      <div class="card">
+        <span class="card-label">Study techniques</span>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-top:4px;">
+          <div class="study-tip">
+            <span class="tip-icon">🕐</span>
+            <span><strong>Spaced Repetition</strong> — Review after 1 day, 3 days, then 7 days for lasting retention.</span>
+          </div>
+          <div class="study-tip">
+            <span class="tip-icon">✍️</span>
+            <span><strong>Active Recall</strong> — Close your notes and write what you remember. Then check.</span>
+          </div>
+          <div class="study-tip">
+            <span class="tip-icon">🍅</span>
+            <span><strong>Pomodoro</strong> — 25 minutes focused, 5 minutes rest. Your brain absorbs more in sprints.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  // ─── STATE ───────────────────────────────────────────────
+  const state = {
+    noteStyle: 'bullet',
+    quizMode: 'mcq',
+    resources: { notes: [], quiz: [], info: [], paper: [] },
+    quizData: [],
+    answered: {}
+  };
+
+  // ─── NAVIGATION ──────────────────────────────────────────
+  function showPanel(id) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.sidebar-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('panel-' + id).classList.add('active');
+    event.currentTarget.classList.add('active');
+    updateLibrary();
+  }
+
+  // ─── STYLE / MODE SELECTORS ──────────────────────────────
+  function selectNoteStyle(el, style) {
+    document.querySelectorAll('.style-pill').forEach(e => e.classList.remove('active'));
+    el.classList.add('active');
+    state.noteStyle = style;
+  }
+  function selectMode(el, mode) {
+    document.querySelectorAll('#panel-quiz .mode-card').forEach(e => e.classList.remove('selected'));
+    el.classList.add('selected');
+    state.quizMode = mode;
+  }
+
+  // ─── RESOURCE MANAGEMENT ─────────────────────────────────
+  function getResourceIcon(url) {
+    if (url.includes('youtube') || url.includes('youtu.be')) return '▶️';
+    if (url.includes('.pdf')) return '📄';
+    if (url.match(/\.(jpg|png|jpeg|gif|webp)/i)) return '🖼️';
+    return '🔗';
+  }
+
+  function addResource(panel) {
+    const input = document.getElementById(panel + '-url');
+    const val = input ? input.value.trim() : '';
+    if (!val) return;
+    state.resources[panel] = state.resources[panel] || [];
+    state.resources[panel].push(val);
+    input.value = '';
+    renderResourceList(panel);
+    updateLibrary();
+  }
+
+  function renderResourceList(panel) {
+    const list = document.getElementById(panel + '-resource-list');
+    if (!list) return;
+    const items = state.resources[panel] || [];
+    list.innerHTML = items.map((url, i) => `
+      <div class="resource-item">
+        <span class="r-icon">${getResourceIcon(url)}</span>
+        <span class="r-text">${url}</span>
+        <button class="r-del" onclick="removeResource('${panel}', ${i})">✕</button>
+      </div>`).join('');
+  }
+
+  function removeResource(panel, i) {
+    state.resources[panel].splice(i, 1);
+    renderResourceList(panel);
+    updateLibrary();
+  }
+
+  function updateLibrary() {
+    const all = [];
+    Object.entries(state.resources).forEach(([panel, urls]) => {
+      urls.forEach(url => all.push({ panel, url }));
+    });
+    const list = document.getElementById('library-list');
+    const empty = document.getElementById('library-empty');
+    if (all.length === 0) {
+      list.innerHTML = '';
+      if (empty) empty.style.display = 'block';
+    } else {
+      if (empty) empty.style.display = 'none';
+      list.innerHTML = all.map(({ panel, url }) => `
+        <div class="resource-item">
+          <span class="r-icon">${getResourceIcon(url)}</span>
+          <span class="r-text">${url}</span>
+          <span style="font-size:0.62rem;color:var(--muted);background:var(--paper-3);padding:2px 7px;border-radius:10px;margin-left:4px;flex-shrink:0;font-family:'DM Mono',monospace;">${panel}</span>
+        </div>`).join('');
+    }
+  }
+
+  // ─── HELPERS ─────────────────────────────────────────────
+  function showLoading(containerId, message) {
+    document.getElementById(containerId).innerHTML = `
+      <div class="output-card">
+        <div class="loading-wrap">
+          <div class="spinner"></div>
+          <div class="loading-text">${message}</div>
+        </div>
+      </div>`;
+  }
+
+  function showError(containerId, msg) {
+    document.getElementById(containerId).innerHTML =
+      `<div class="error-msg">⚠️ ${msg}</div>`;
+  }
+
+  function setBtn(id, loading) {
+    const btn = document.getElementById(id);
+    if (loading) { btn.disabled = true; btn.textContent = '⏳ Generating…'; }
+    else { btn.disabled = false; }
+  }
+
+  function buildResourceContext(panel) {
+    const urls = state.resources[panel] || [];
+    if (urls.length === 0) return '';
+    return `\n\nThe user has provided these resource links for context (refer to their content if you can infer it from the URL type):\n${urls.map(u => '• ' + u).join('\n')}`;
+  }
+async function callGemini(prompt) {
+    // 1. Put your real API key between the quotes below
+    var myKey = "AQ.Ab8RN6IXygtQYGl6Za60_T_jMIRlq9lW-ga57WAEbhnANP5jHQ"; 
+    
+    // Classic link joining (No backticks required!)
+    var url = "https://googleapis.com" + myKey;
+
+    try {
+        var response = await fetch(url, {
+            method: "POST",
+            headers: { 
+                "Content-Type": "application/json" 
+            },
+            body: JSON.stringify({
+                contents: [{ 
+                    parts: [{ text: prompt }] 
+                }]
+            })
+        });
+
+        if (!response.ok) {
+            return "Error: Server returned status code " + response.status;
+        }
+
+        var data = await response.json();
+        
+        // Safe list searching using standard numbers [0]
+        if (data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0]) {
+            return data.candidates[0].content.parts[0].text;
+        } else {
+            return "Error: Received empty data from Google.";
+        }
+
+    } catch (error) {
+        return "Error connecting to service: " + error.message;
+    }
+}
+   // ─── MARKDOWN RENDERER ───────────────────────────────────
+  function renderMarkdown(text) {
+    return text
+      .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+      .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+      .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.+?)\*/g, '<em>$1</em>')
+      .replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
+      .replace(/^[-•] (.+)$/gm, '<li>$1</li>')
+      .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')
+      .replace(/^\d+\. (.+)$/gm, '<li>$1</li>')
+      .replace(/\n\n/g, '</p><p>')
+      .replace(/^(?!<[hublp])/gm, '')
+      .split('\n').map(line => {
+        if (!line.match(/^<[h1-6ul]|^<li|^<blockquote/)) return line ? `<p>${line}</p>` : '';
+        return line;
+      }).join('');
+  }
+  // ─── GENERATE NOTES ──────────────────────────────────────
+  async function generateNotes() {
+    const input = document.getElementById('notes-input').value.trim();
+    if (!input && (state.resources.notes || []).length === 0) {
+      alert('Please enter some content or add a resource link!'); return;
+    }
+    showLoading('notes-output', 'Brewing your notes… ☕');
+    setBtn('notes-btn', true);
+
+    const styleInstructions = {
+      bullet: 'Use clear bullet points with bold key terms. Group under headings.',
+      detailed: 'Write detailed, paragraph-style notes with clear explanations. Use headings.',
+      cornell: 'Format as Cornell notes: left column has questions/cues, right column has notes, bottom has summary. Use markdown tables.',
+      story: 'Write the notes in a storytelling narrative style, making concepts flow like a story. Keep it engaging.',
+      short: 'Only list the most critical key points, definitions, and formulas. Keep it ultra-concise.'
+    };
+
+    const prompt = `You are a friendly, expert study notes creator. 
+
+The student needs SIMPLIFIED, easy-to-understand notes. Use simple language (no jargon without explanation). Make it relatable and clear.
+
+Style instruction: ${styleInstructions[state.noteStyle]}
+
+Topic/Content provided:
+${input}
+${buildResourceContext('notes')}
+
+Generate well-structured study notes. Start directly with the notes (no preamble). Use markdown formatting with headers, bold key terms, and clear organization. End with a "⭐ Quick Recap" section of 3-5 bullet points.`;
+
+    try {
+      const result = await callGemini(prompt);
+      document.getElementById('notes-output').innerHTML = `
+        <div class="output-card">
+          <div class="output-header">
+            <div class="output-title">📝 Your Study Notes</div>
+            <button class="btn-action" onclick="copyText('notes-md-body')">📋 Copy</button>
+          </div>
+          <div class="md-output" id="notes-md-body">${renderMarkdown(result)}</div>
+        </div>`;
+    } catch (e) {
+      showError('notes-output', 'Couldn\'t generate notes. Please try again. ' + e.message);
+    }
+    const btn = document.getElementById('notes-btn');
+    btn.disabled = false; btn.innerHTML = '✨ Generate Notes';
+  }
+
+  // ─── GENERATE QUIZ ───────────────────────────────────────
+  async function generateQuiz() {
+    const input = document.getElementById('quiz-input').value.trim();
+    if (!input && (state.resources.quiz || []).length === 0) {
+      alert('Please enter a topic or add a resource link!'); return;
+    }
+    showLoading('quiz-output', 'Crafting tricky questions… 🎯');
+    setBtn('quiz-btn', true);
+
+    const modeInstructions = {
+      mcq: 'Generate 6 multiple choice questions. Each with 4 options (A, B, C, D). Mark the correct answer and give a brief explanation.',
+      truefalse: 'Generate 8 true or false statements. Mark each as TRUE or FALSE and give a one-line explanation.',
+      short: 'Generate 5 short answer questions (2-3 sentence answers expected). Provide model answers.',
+      mixed: 'Generate 2 MCQs, 2 true/false, 2 short answer, and 1 reasoning question. Mix them up.'
+    };
+
+    const prompt = `You are a quiz generator. Generate a quiz on this topic.
+
+${modeInstructions[state.quizMode]}
+
+Topic: ${input}
+${buildResourceContext('quiz')}
+
+IMPORTANT: Respond with ONLY a valid JSON array, no markdown, no backticks. Format:
+[
+  {
+    "type": "mcq",
+    "question": "Question text?",
+    "options": ["A. option1", "B. option2", "C. option3", "D. option4"],
+    "correct": "A",
+    "explanation": "Because..."
+  },
+  {
+    "type": "truefalse",
+    "question": "Statement here.",
+    "correct": "TRUE",
+    "explanation": "Because..."
+  },
+  {
+    "type": "short",
+    "question": "Question?",
+    "answer": "Model answer here."
+  }
+]`;
+
+    try {
+      const result = await callGemini(prompt);
+      const clean = result.replace(/```json|```/g, '').trim();
+      const questions = JSON.parse(clean);
+      state.quizData = questions;
+      state.answered = {};
+      renderQuiz(questions);
+    } catch (e) {
+      showError('quiz-output', 'Couldn\'t parse quiz. Retrying with simplified format… Try again!');
+    }
+    const btn = document.getElementById('quiz-btn');
+    btn.disabled = false; btn.innerHTML = '🎯 Generate Quiz';
+  }
+
+  function renderQuiz(questions) {
+    const html = questions.map((q, i) => {
+      if (q.type === 'mcq') {
+        return `<div class="quiz-question" id="qq-${i}">
+          <div class="quiz-q-num">Question ${i + 1} · Multiple Choice</div>
+          <div class="quiz-q-text">${q.question}</div>
+          <div class="quiz-options">
+            ${(q.options || []).map((opt, oi) => `
+              <button class="quiz-option" onclick="checkMCQ(${i}, '${opt[0]}', '${q.correct}')" id="qo-${i}-${oi}">${opt}</button>
+            `).join('')}
+          </div>
+          <div id="qe-${i}" style="display:none;" class="quiz-explain">💡 ${q.explanation}</div>
+        </div>`;
+      } else if (q.type === 'truefalse') {
+        return `<div class="quiz-question" id="qq-${i}">
+          <div class="quiz-q-num">Question ${i + 1} · True / False</div>
+          <div class="quiz-q-text">${q.question}</div>
+          <div class="quiz-options">
+            <button class="quiz-option" onclick="checkTF(${i}, 'TRUE', '${q.correct}')" id="qo-${i}-t">✅ TRUE</button>
+            <button class="quiz-option" onclick="checkTF(${i}, 'FALSE', '${q.correct}')" id="qo-${i}-f">❌ FALSE</button>
+          </div>
+          <div id="qe-${i}" style="display:none;" class="quiz-explain">💡 ${q.explanation}</div>
+        </div>`;
+      } else {
+        return `<div class="quiz-question" id="qq-${i}">
+          <div class="quiz-q-num">Question ${i + 1} · Short Answer</div>
+          <div class="quiz-q-text">${q.question}</div>
+          <textarea class="text-area" id="short-${i}" placeholder="Write your answer here…" rows="2" style="margin-bottom:8px;"></textarea>
+          <button class="quiz-option" style="font-weight:600;" onclick="revealShort(${i})">👁 Show Model Answer</button>
+          <div id="qe-${i}" style="display:none;" class="quiz-explain">📖 Model Answer: ${q.answer}</div>
+        </div>`;
+      }
+    }).join('');
+
+    document.getElementById('quiz-output').innerHTML = `
+      <div class="output-card">
+        <div class="output-header">
+          <div class="output-title">🎯 Quiz — ${questions.length} Questions</div>
+          <button class="btn-action" onclick="generateQuiz()">🔄 New Quiz</button>
+        </div>
+        ${html}
+        <div style="text-align:center;margin-top:16px;">
+          <div id="quiz-score" style="font-family:'DM Serif Display',serif;font-size:1rem;color:var(--ink-soft);"></div>
+        </div>
+      </div>`;
+  }
+
+  function checkMCQ(qi, selected, correct) {
+    if (state.answered[qi]) return;
+    state.answered[qi] = selected;
+    const qBlock = document.getElementById('qq-' + qi);
+    qBlock.querySelectorAll('.quiz-option').forEach(btn => {
+      const letter = btn.textContent.trim()[0];
+      if (letter === correct) btn.classList.add('correct');
+      else if (letter === selected && selected !== correct) btn.classList.add('wrong');
+      btn.disabled = true;
+    });
+    document.getElementById('qe-' + qi).style.display = 'block';
+    updateScore();
+  }
+
+  function checkTF(qi, selected, correct) {
+    if (state.answered[qi]) return;
+    state.answered[qi] = selected;
+    const qBlock = document.getElementById('qq-' + qi);
+    qBlock.querySelectorAll('.quiz-option').forEach(btn => {
+      const isTrueBtn = btn.textContent.includes('TRUE');
+      if ((isTrueBtn && correct === 'TRUE') || (!isTrueBtn && correct === 'FALSE')) btn.classList.add('correct');
+      else if ((isTrueBtn && selected === 'TRUE' && correct !== 'TRUE') || (!isTrueBtn && selected === 'FALSE' && correct !== 'FALSE')) btn.classList.add('wrong');
+      btn.disabled = true;
+    });
+    document.getElementById('qe-' + qi).style.display = 'block';
+    updateScore();
+  }
+
+  function revealShort(qi) {
+    document.getElementById('qe-' + qi).style.display = 'block';
+  }
+
+  function updateScore() {
+    const total = state.quizData.filter(q => q.type !== 'short').length;
+    const correct = state.quizData.filter((q, i) => {
+      if (q.type === 'short') return false;
+      return state.answered[i] === q.correct;
+    }).length;
+    if (Object.keys(state.answered).length > 0) {
+      const pct = Math.round((correct / total) * 100);
+      document.getElementById('quiz-score').textContent =
+        `Score: ${correct}/${total} (${pct}%) ${pct >= 70 ? '🌟' : pct >= 50 ? '📚' : '💪'}`;
+    }
+  }
+
+  // ─── GENERATE INFOGRAPHIC ────────────────────────────────
+  async function generateInfographic() {
+    const input = document.getElementById('info-input').value.trim();
+    if (!input) { alert('Please enter a topic!'); return; }
+    showLoading('info-output', 'Designing your visual summary… 🎨');
+    setBtn('info-btn', true);
+
+    const prompt = `You are creating a visual infographic summary.
+
+Topic: ${input}
+${buildResourceContext('info')}
+
+Create a visual card-based summary. Respond ONLY with valid JSON (no backticks):
+{
+  "title": "Topic Title",
+  "subtitle": "A one-line hook",
+  "blocks": [
+    {
+      "icon": "🔬",
+      "title": "Section heading",
+      "content": "2-3 sentences of simplified content. Use • for bullet points within."
+    }
+  ]
+}
+
+Generate 6-8 blocks covering: definition, key concepts, how it works, examples, importance, common misconceptions, memory tip, quick fact. Keep language clear and easy to understand.`;
+
+    try {
+      const result = await callGemini(prompt);
+      const clean = result.replace(/```json|```/g, '').trim();
+      const data = JSON.parse(clean);
+
+      const blocks = data.blocks.map(b => `
+        <div class="info-block">
+          <span class="ib-icon">${b.icon}</span>
+          <div class="ib-title">${b.title}</div>
+          <div class="ib-content">${b.content.replace(/•/g, '\n•')}</div>
+        </div>`).join('');
+
+      document.getElementById('info-output').innerHTML = `
+        <div class="output-card">
+          <div class="output-header">
+            <div class="output-title">🗺️ ${data.title}</div>
+            <button class="btn-action" onclick="generateInfographic()">🔄 Redo</button>
+          </div>
+          <p style="font-style:italic;color:var(--muted);font-size:0.84rem;margin-bottom:16px;">${data.subtitle}</p>
+          <div class="infograph-grid">${blocks}</div>
+        </div>`;
+    } catch (e) {
+      showError('info-output', 'Couldn\'t generate visual. Please try again.');
+    }
+    const btn = document.getElementById('info-btn');
+    btn.disabled = false; btn.innerHTML = '🗺️ Generate Visual Summary';
+  }
+
+  // ─── GENERATE PAPER ──────────────────────────────────────
+  async function generatePaper() {
+    const input = document.getElementById('paper-input').value.trim();
+    if (!input) { alert('Please enter a subject/topic!'); return; }
+    showLoading('paper-output', 'Typesetting your exam paper… 📄');
+    setBtn('paper-btn', true);
+
+    const incMCQ = document.getElementById('inc-mcq').checked;
+    const incDef = document.getElementById('inc-def').checked;
+    const incRem = document.getElementById('inc-rem').checked;
+    const incAna = document.getElementById('inc-ana').checked;
+    const incCBQ = document.getElementById('inc-cbq').checked;
+
+    const sections = [];
+    if (incMCQ) sections.push('Section A: MCQ (1 mark each) — 5 questions');
+    if (incDef) sections.push('Section B: Define / Fill in the Blank (2 marks each) — 4 questions');
+    if (incRem) sections.push('Section C: Remembering Based Short Answer (3 marks each) — 3 questions. These test recall and understanding.');
+    if (incAna) sections.push('Section D: Analysing / Application (4 marks each) — 2 questions. These require reasoning and critical thinking.');
+    if (incCBQ) sections.push('Section E: Competency Based Questions / Case Study (5 marks) — 1 passage with 3-4 sub-questions based on a real-world scenario or passage.');
+
+    const prompt = `Generate a sample exam question paper.
+
+Subject/Topic: ${input}
+${buildResourceContext('paper')}
+
+Include these sections:
+${sections.join('\n')}
+
+Respond ONLY with JSON (no backticks):
+{
+  "subject": "Subject Name",
+  "topic": "Chapter/Topic",
+  "time": "2 hours",
+  "maxMarks": 30,
+  "sections": [
+    {
+      "title": "Section A: Multiple Choice Questions",
+      "instruction": "Choose the correct answer. (1 mark each)",
+      "questions": [
+        { "num": "1.", "text": "Question text?", "marks": 1 }
+      ]
+    }
+  ]
+}
+
+Make questions realistic and varied in difficulty. CBQ should have a short real-world passage followed by questions.`;
+
+    try {
+      const result = await callGemini(prompt);
+      const clean = result.replace(/```json|```/g, '').trim();
+      const paper = JSON.parse(clean);
+
+      let totalQ = 0;
+      const sectionsHTML = paper.sections.map(sec => {
+        const qs = sec.questions.map(q => {
+          totalQ++;
+          return `<div class="paper-q">
+            <span class="q-num">${q.num || totalQ + '.'}</span>
+            ${q.text}
+            <span class="marks">[${q.marks} mark${q.marks > 1 ? 's' : ''}]</span>
+          </div>`;
+        }).join('');
+        return `
+          <div class="paper-section-title">${sec.title}</div>
+          <p style="font-size:0.77rem;color:var(--muted);margin-bottom:10px;font-style:italic;">${sec.instruction || ''}</p>
+          ${qs}`;
+      }).join('');
+
+      document.getElementById('paper-output').innerHTML = `
+        <div class="output-card">
+          <div class="output-header">
+            <div class="output-title">📄 Sample Question Paper</div>
+            <button class="btn-action" onclick="window.print()">🖨 Print</button>
+          </div>
+          <div class="paper-sheet">
+            <div class="paper-header">
+              <div class="paper-school">Sample Examination</div>
+              <div class="paper-title">${paper.subject} — ${paper.topic}</div>
+              <div class="paper-meta">
+                <span>⏱ Time: ${paper.time}</span>
+                <span>Max Marks: ${paper.maxMarks}</span>
+              </div>
+            </div>
+            ${sectionsHTML}
+          </div>
+        </div>`;
+    } catch (e) {
+      showError('paper-output', 'Couldn\'t generate paper. Please try again. ' + e.message);
+    }
+    const btn = document.getElementById('paper-btn');
+    btn.disabled = false; btn.innerHTML = '📄 Generate Question Paper';
+  }
+
+  // ─── COPY ────────────────────────────────────────────────
+  function copyText(id) {
+    const el = document.getElementById(id);
+    const text = el ? el.innerText : '';
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = event.currentTarget;
+      btn.textContent = '✅ Copied!';
+      setTimeout(() => btn.textContent = '📋 Copy', 1800);
+    });
+  }
+
+  // ─── INIT ────────────────────────────────────────────────
+  updateLibrary();
+</script>
+</body>
+</html>
