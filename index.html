@@ -1159,18 +1159,23 @@ async function callGemini(prompt) {
     
     // Split into readable parts so it doesn't overflow your monitor layout
     const base = "https://generativelanguage.googleapis.com";
-    const path = "/v1beta/models/gemini-2.5-flash:generateContent?key=";
-    const url = base + path + API_KEY;
-
+   const path = "/v1beta/models/gemini-flash-latest:generateContent";
+const url = base + path;
     try {
-        const response = await fetch(url, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                contents: [{ parts: [{ text: prompt }] }]
-            })
-        });
-
+       const response = await fetch(url, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "X-goog-api-key": API_KEY
+  },
+  body: JSON.stringify({
+    contents: [{
+      parts: [{
+        text: prompt
+      }]
+    }]
+  })
+});
         const data = await response.json();
         return data.candidates[0].content.parts[0].text;
 
