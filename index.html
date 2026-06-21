@@ -1155,11 +1155,11 @@
     return `\n\nThe user has provided these resource links for context (refer to their content if you can infer it from the URL type):\n${urls.map(u => '• ' + u).join('\n')}`;
   }
 async function callGemini(prompt) {
-    const API_KEY = "AQ.Ab8RN6KRNKv0_KcsdX7Gjz3_JrJbX2pjjzoDao1bWWLMfWqCCw"; 
+    const API_KEY = "AQ.Ab8RN6L3CoO13-yequn3yfoWFLUg-_Gs5-u-Wf-hdlu9fVqb2g"; 
     
     // Split into readable parts so it doesn't overflow your monitor layout
     const base = "https://generativelanguage.googleapis.com";
-   const path = "/v1beta/models/gemini-flash-latest:generateContent";
+  const path = "/v1beta/models/gemini-2.5-flash:generateContent";
 const url = base + path;
     try {
        const response = await fetch(url, {
